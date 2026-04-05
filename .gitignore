@@ -1,0 +1,7 @@
+samples/*.aux
+samples/*.log
+samples/*.out
+samples/*.toc
+samples/*.pdf
+samples/*.synctex.gz
+samples/auto/

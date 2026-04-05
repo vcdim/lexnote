@@ -1,12 +1,14 @@
-\documentclass[style=ml]{lexnote}
+\documentclass[rep, style=ml]{lexnote}
 
-\title{Sample: Diffusion Models}
+\title{Sample: Generative Models}
 \author{Jane Doe}
 \date{\today}
 
 \begin{document}
 \maketitle
 \tableofcontents
+
+\chapter{Diffusion Models}
 
 \section{Forward Process}
 
@@ -76,16 +78,47 @@ The \keyword{simplified loss} used in DDPM reduces to a denoising objective:
   （噪声预测等价于学习得分函数，与 score-based 模型统一）
 \end{rem}
 
-\begin{defbox}[Classifier-Free Guidance]
-  A technique that interpolates between conditional and unconditional
-  predictions to control generation quality vs.\ diversity:
-  $\hat{\boldsymbol{\epsilon}} = (1+w)\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t, c) - w\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$
+\chapter{Normalizing Flows}
+
+\section{Change of Variables}
+
+\begin{defn}[Normalizing Flow]
+  A normalizing flow transforms a simple base distribution $p_z(\mathbf{z})$
+  through a sequence of invertible mappings $f_1, f_2, \ldots, f_K$ to
+  produce a complex target distribution:
+  \[
+    \mathbf{x} = f_K \circ f_{K-1} \circ \cdots \circ f_1(\mathbf{z})
+  \]
+  （正则化流：通过可逆变换将简单分布映射为复杂分布）
+\end{defn}
+
+\begin{thm}[Change of Variables Formula]
+  If $f$ is an invertible differentiable function, the density of
+  $\mathbf{x} = f(\mathbf{z})$ is:
+  \[
+    p_x(\mathbf{x})
+    = p_z\!\bigl(f^{-1}(\mathbf{x})\bigr)\,
+      \left|\det \frac{\partial f^{-1}}{\partial \mathbf{x}}\right|
+  \]
+  （换元公式：变换后的密度由 Jacobian 行列式调整）
+\end{thm}
+
+\section{Architectures}
+
+\begin{defbox}[Coupling Layer]
+  Split the input $\mathbf{x}$ into two halves $(\mathbf{x}_a, \mathbf{x}_b)$.
+  Transform one conditioned on the other:
+  $\mathbf{y}_a = \mathbf{x}_a$,\quad
+  $\mathbf{y}_b = \mathbf{x}_b \odot \exp(s(\mathbf{x}_a)) + t(\mathbf{x}_a)$.
+  The Jacobian is triangular, so its determinant is cheap to compute.
 \end{defbox}
 
-\todo{Add section on DDIM and accelerated sampling}
+\begin{rem}[Practical Consideration]
+  Coupling layers are efficient ($O(D)$ Jacobian) but limited in
+  expressiveness per layer. Stacking many layers with alternating
+  partitions is essential for modeling complex distributions.
+\end{rem}
+
+\todo{Add chapter on VAEs}
 
 \end{document}
-%%% Local Variables:
-%%% mode: LaTeX
-%%% TeX-master: t
-%%% End:
