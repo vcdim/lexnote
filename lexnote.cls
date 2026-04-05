@@ -1,17 +1,38 @@
-% lexnote.sty — Personal note template for ctexrep / ctexart
-% Usage: \documentclass{ctexrep}   % or ctexart
-%        \usepackage{lexnote}              % default: style=law
-%        \usepackage[style=ml]{lexnote}    % ML style
+% lexnote.cls — Personal note class wrapping ctexart / ctexrep / ctexbook
+% Usage: \documentclass{lexnote}               % ctexart + law (default)
+%        \documentclass[style=ml]{lexnote}     % ctexart + ML
+%        \documentclass[rep]{lexnote}          % ctexrep + law
+%        \documentclass[book]{lexnote}         % ctexbook + law
+%        \documentclass[book,style=ml]{lexnote}% ctexbook + ML
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{lexnote}[2026/04/05 Personal note style with colored section boxes]
+\ProvidesClass{lexnote}[2026/04/05 Personal note class with colored section boxes]
 
 % ── Options ─────────────────────────────────────────────────
 \RequirePackage{kvoptions}
 \RequirePackage{etoolbox}
 \SetupKeyvalOptions{family=lexnote,prefix=lexnote@}
 \DeclareStringOption[law]{style}
+\DeclareBoolOption[false]{rep}
+\DeclareBoolOption[false]{book}
 \ProcessKeyvalOptions*
+
+% Remove our options from global list so they don't leak to ctex/zhnum
+\@expandtwoargs\@removeelement{style=\lexnote@style}\@classoptionslist\@classoptionslist
+\@expandtwoargs\@removeelement{rep}\@classoptionslist\@classoptionslist
+\@expandtwoargs\@removeelement{book}\@classoptionslist\@classoptionslist
+
+% ── Load Base Class ─────────────────────────────────────────
+\newif\iflexnote@haschapter
+\iflexnote@book
+  \LoadClass[scheme=plain]{ctexbook}
+  \lexnote@haschaptertrue
+\else\iflexnote@rep
+  \LoadClass[scheme=plain]{ctexrep}
+  \lexnote@haschaptertrue
+\else
+  \LoadClass[scheme=plain]{ctexart}
+\fi\fi
 
 % ── Page Layout ──────────────────────────────────────────────
 \RequirePackage[
@@ -24,7 +45,6 @@
 \RequirePackage{microtype}
 \RequirePackage{fontspec}
 \ifdefstring{\lexnote@style}{ml}{%
-  % Computer Modern (default for LaTeX) + Songti SC
   \setCJKmainfont{Songti SC}
 }{%
   \setmainfont{Calibri}
@@ -70,10 +90,10 @@
 
 % ── Table of Contents ───────────────────────────────────────
 \RequirePackage{tocloft}
-\@ifundefined{chapter}{}{%
+\iflexnote@haschapter
   \setlength{\cftchapindent}{0em}
   \setlength{\cftchapnumwidth}{2em}
-}
+\fi
 \setlength{\cftsecindent}{1.5em}
 \setlength{\cftsubsecindent}{3em}
 \setlength{\cftsubsubsecindent}{4.5em}
@@ -82,30 +102,47 @@
 \renewcommand{\cftsecfont}{\scshape}
 
 % ── Section Numbering ───────────────────────────────────────
-\@ifundefined{chapter}{}{%
+\iflexnote@haschapter
   \ctexset{chapter/name = {}}
+\fi
+\ifdefstring{\lexnote@style}{ml}{%
+  % ML style: plain 1, 2, 3 numbering
+}{%
+  % Law style: A, B, C / a, b, c numbering
+  \renewcommand{\thesection}{\Alph{section}}
+  \renewcommand{\thesubsection}{\alph{subsection}}
 }
-\renewcommand{\thesection}{\Alph{section}}
-\renewcommand{\thesubsection}{\alph{subsection}}
 
 % ── Section Styling ─────────────────────────────────────────
 \RequirePackage{titlesec}
 
-\@ifundefined{chapter}{}{%
-  \newcommand{\chapterbox}[1]{%
-    \parbox{\dimexpr\textwidth-2\fboxsep}{\thechapter\hspace{1em}#1}}
-  \titleformat{\chapter}[hang]
-    {\fontsize{18pt}{21.6pt}\selectfont\bfseries}{}{0pt}{\chapterbox}
+\ifdefstring{\lexnote@style}{ml}{%
+  % ML style: plain headings, no colored boxes
+  \iflexnote@haschapter
+    \titleformat{\chapter}[hang]
+      {\fontsize{18pt}{21.6pt}\selectfont\bfseries}{\thechapter}{1em}{}
+  \fi
+  \titleformat{\section}
+    {\fontsize{14pt}{16.8pt}\selectfont\bfseries}{\thesection}{1em}{}
+  \titleformat{\subsection}
+    {\fontsize{10pt}{12pt}\selectfont\bfseries}{\thesubsection}{1em}{}
+}{%
+  % Law style: colored boxes
+  \iflexnote@haschapter
+    \newcommand{\chapterbox}[1]{%
+      \parbox{\dimexpr\textwidth-2\fboxsep}{\thechapter\hspace{1em}#1}}
+    \titleformat{\chapter}[hang]
+      {\fontsize{18pt}{21.6pt}\selectfont\bfseries}{}{0pt}{\chapterbox}
+  \fi
+  \newcommand{\sectionbox}[1]{%
+    \colorbox{sectionbg}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesection\hspace{1em}\textsc{#1}}}}
+  \newcommand{\subsectionbox}[1]{%
+    \colorbox{subsectionbg}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesubsection\hspace{1em}#1}}}
+  \titleformat{\section}
+    {\fontsize{14pt}{16.8pt}\selectfont\bfseries}{}{0pt}{\sectionbox}
+  \titleformat{\subsection}
+    {\fontsize{10pt}{12pt}\selectfont\bfseries}{}{0pt}{\subsectionbox}
 }
-\newcommand{\sectionbox}[1]{%
-  \colorbox{sectionbg}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesection\hspace{1em}\textsc{#1}}}}
-\newcommand{\subsectionbox}[1]{%
-  \colorbox{subsectionbg}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesubsection\hspace{1em}#1}}}
-
-\titleformat{\section}
-  {\fontsize{14pt}{16.8pt}\selectfont\bfseries}{}{0pt}{\sectionbox}
-\titleformat{\subsection}
-  {\fontsize{10pt}{12pt}\selectfont\bfseries}{}{0pt}{\subsectionbox}
 
 % ── Boxes ───────────────────────────────────────────────────
 \RequirePackage[most]{tcolorbox}
@@ -152,16 +189,7 @@
 
 \ifdefstring{\lexnote@style}{ml}{%
   % ── ML style: Theorem / Lemma / Definition / Remark ──────
-  \@ifundefined{chapter}{%
-    \newtcbtheorem[number within=section]{Theorem}{Theorem}{
-      colback=accent!8,colframe=accent!70,fonttitle=\bfseries,left=6pt}{thm}
-    \newtcbtheorem[number within=section]{Lemma}{Lemma}{
-      colback=blue!6,colframe=blue!50,fonttitle=\bfseries,left=6pt}{lem}
-    \newtcbtheorem[number within=section]{Definition}{Definition}{
-      colback=accent!5,colframe=accent!40,fonttitle=\bfseries,left=6pt}{def}
-    \newtcbtheorem[number within=section]{Remark}{Remark}{
-      colback=gray!8,colframe=gray!40,fonttitle=\bfseries,left=6pt}{rem}
-  }{%
+  \iflexnote@haschapter
     \newtcbtheorem[number within=chapter]{Theorem}{Theorem}{
       colback=accent!8,colframe=accent!70,fonttitle=\bfseries,left=6pt}{thm}
     \newtcbtheorem[number within=chapter]{Lemma}{Lemma}{
@@ -170,28 +198,37 @@
       colback=accent!5,colframe=accent!40,fonttitle=\bfseries,left=6pt}{def}
     \newtcbtheorem[number within=chapter]{Remark}{Remark}{
       colback=gray!8,colframe=gray!40,fonttitle=\bfseries,left=6pt}{rem}
-  }
+  \else
+    \newtcbtheorem[number within=section]{Theorem}{Theorem}{
+      colback=accent!8,colframe=accent!70,fonttitle=\bfseries,left=6pt}{thm}
+    \newtcbtheorem[number within=section]{Lemma}{Lemma}{
+      colback=blue!6,colframe=blue!50,fonttitle=\bfseries,left=6pt}{lem}
+    \newtcbtheorem[number within=section]{Definition}{Definition}{
+      colback=accent!5,colframe=accent!40,fonttitle=\bfseries,left=6pt}{def}
+    \newtcbtheorem[number within=section]{Remark}{Remark}{
+      colback=gray!8,colframe=gray!40,fonttitle=\bfseries,left=6pt}{rem}
+  \fi
   \newenvironment{thm}[1][]{\begin{Theorem}{#1}{}}{\end{Theorem}}
   \newenvironment{lem}[1][]{\begin{Lemma}{#1}{}}{\end{Lemma}}
   \newenvironment{defn}[1][]{\begin{Definition}{#1}{}}{\end{Definition}}
   \newenvironment{rem}[1][]{\begin{Remark}{#1}{}}{\end{Remark}}
 }{%
   % ── Law style: Statute / Case / Rule ─────────────────────
-  \@ifundefined{chapter}{%
-    \newtcbtheorem[number within=section]{Statute}{Statute}{
-      colback=black!20,colframe=black!60,fonttitle=\bfseries,left=6pt}{statute}
-    \newtcbtheorem[number within=section]{Case}{Case}{
-      colback=purple!10,colframe=purple!60,fonttitle=\bfseries,left=6pt}{case}
-    \newtcbtheorem[number within=section]{Rule}{Rule}{
-      colback=teal!15,colframe=teal!15,fonttitle=\bfseries,coltitle=black,left=6pt}{rul}
-  }{%
+  \iflexnote@haschapter
     \newtcbtheorem[number within=chapter]{Statute}{Statute}{
       colback=black!20,colframe=black!60,fonttitle=\bfseries,left=6pt}{statute}
     \newtcbtheorem[number within=chapter]{Case}{Case}{
       colback=purple!10,colframe=purple!60,fonttitle=\bfseries,left=6pt}{case}
     \newtcbtheorem[number within=chapter]{Rule}{Rule}{
       colback=teal!15,colframe=teal!15,fonttitle=\bfseries,coltitle=black,left=6pt}{rul}
-  }
+  \else
+    \newtcbtheorem[number within=section]{Statute}{Statute}{
+      colback=black!20,colframe=black!60,fonttitle=\bfseries,left=6pt}{statute}
+    \newtcbtheorem[number within=section]{Case}{Case}{
+      colback=purple!10,colframe=purple!60,fonttitle=\bfseries,left=6pt}{case}
+    \newtcbtheorem[number within=section]{Rule}{Rule}{
+      colback=teal!15,colframe=teal!15,fonttitle=\bfseries,coltitle=black,left=6pt}{rul}
+  \fi
   \newenvironment{statute}[1][]{\begin{Statute}{#1}{}}{\end{Statute}}
   \newenvironment{case}[1][]{\begin{Case}{#1}{}}{\end{Case}}
   \newenvironment{rul}[1][]{\begin{Rule}{#1}{}}{\end{Rule}}
