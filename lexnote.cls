@@ -17,10 +17,11 @@
 \DeclareBoolOption[false]{book}
 \ProcessKeyvalOptions*
 
-% Remove our options from global list so they don't leak to ctex/zhnum
-\@expandtwoargs\@removeelement{style=\lexnote@style}\@classoptionslist\@classoptionslist
-\@expandtwoargs\@removeelement{rep}\@classoptionslist\@classoptionslist
-\@expandtwoargs\@removeelement{book}\@classoptionslist\@classoptionslist
+% Clear class options so they don't leak to ctex/zhnum (LaTeX2e + LaTeX3)
+\let\@classoptionslist\@empty
+\@ifundefined{@raw@classoptionslist}{}{%
+  \let\@raw@classoptionslist\@empty
+}
 
 % ── Load Base Class ─────────────────────────────────────────
 \newif\iflexnote@haschapter
