@@ -1,9 +1,17 @@
-% lexnote.sty — Minimal personal note template for ctexrep
-% Usage: \documentclass{ctexrep}
-%        \usepackage{lexnote}
+% lexnote.sty — Personal note template for ctexrep / ctexart
+% Usage: \documentclass{ctexrep}   % or ctexart
+%        \usepackage{lexnote}              % default: style=law
+%        \usepackage[style=ml]{lexnote}    % ML style
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{lexnote}[2026/04/05 Personal note style with colored section boxes]
+
+% ── Options ─────────────────────────────────────────────────
+\RequirePackage{kvoptions}
+\RequirePackage{etoolbox}
+\SetupKeyvalOptions{family=lexnote,prefix=lexnote@}
+\DeclareStringOption[law]{style}
+\ProcessKeyvalOptions*
 
 % ── Page Layout ──────────────────────────────────────────────
 \RequirePackage[
@@ -12,19 +20,32 @@
 ]{geometry}
 
 % ── Typography & Spacing ────────────────────────────────────
-\RequirePackage{parskip}        % paragraph spacing instead of indent
-\RequirePackage{microtype}      % microtypographic enhancements
+\RequirePackage{parskip}
+\RequirePackage{microtype}
 \RequirePackage{fontspec}
-\setmainfont{Calibri}
-\setCJKmainfont{Kaiti SC}
+\ifdefstring{\lexnote@style}{ml}{%
+  % Computer Modern (default for LaTeX) + Songti SC
+  \setCJKmainfont{Songti SC}
+}{%
+  \setmainfont{Calibri}
+  \setCJKmainfont{Kaiti SC}
+}
 
 % ── Colors ──────────────────────────────────────────────────
 \RequirePackage{xcolor}
-\definecolor{accent}{HTML}{2E6B8A}   % teal accent
-\definecolor{lightbg}{HTML}{F0F4F7}  % light background for boxes
-\definecolor{chapterbg}{HTML}{D5F5E3}   % light green
-\definecolor{sectionbg}{HTML}{D6EAF8}   % light blue
-\definecolor{subsectionbg}{HTML}{FADBD8} % light red/orange
+\ifdefstring{\lexnote@style}{ml}{%
+  \definecolor{accent}{HTML}{4A3DCC}      % purple-blue
+  \definecolor{lightbg}{HTML}{F5F3FF}     % very light purple
+  \definecolor{chapterbg}{HTML}{F0E8FF}   % light purple
+  \definecolor{sectionbg}{HTML}{E8E0FF}   % soft purple
+  \definecolor{subsectionbg}{HTML}{D6E4FF} % soft blue
+}{%
+  \definecolor{accent}{HTML}{2E6B8A}      % teal
+  \definecolor{lightbg}{HTML}{F0F4F7}     % light background
+  \definecolor{chapterbg}{HTML}{D5F5E3}   % light green
+  \definecolor{sectionbg}{HTML}{D6EAF8}   % light blue
+  \definecolor{subsectionbg}{HTML}{FADBD8} % light red/orange
+}
 
 % ── Math ────────────────────────────────────────────────────
 \RequirePackage{amsmath,amssymb,mathtools,amsthm}
@@ -49,19 +70,20 @@
 
 % ── Table of Contents ───────────────────────────────────────
 \RequirePackage{tocloft}
-\setlength{\cftchapindent}{0em}
+\@ifundefined{chapter}{}{%
+  \setlength{\cftchapindent}{0em}
+  \setlength{\cftchapnumwidth}{2em}
+}
 \setlength{\cftsecindent}{1.5em}
 \setlength{\cftsubsecindent}{3em}
 \setlength{\cftsubsubsecindent}{4.5em}
-
-\setlength{\cftchapnumwidth}{2em}
 \setlength{\cftsecnumwidth}{1.5em}
 \setlength{\cftsubsecnumwidth}{1.5em}
 \renewcommand{\cftsecfont}{\scshape}
 
 % ── Section Numbering ───────────────────────────────────────
-\ctexset{
-  chapter/name = {},
+\@ifundefined{chapter}{}{%
+  \ctexset{chapter/name = {}}
 }
 \renewcommand{\thesection}{\Alph{section}}
 \renewcommand{\thesubsection}{\alph{subsection}}
@@ -69,15 +91,17 @@
 % ── Section Styling ─────────────────────────────────────────
 \RequirePackage{titlesec}
 
-\newcommand{\chapterbox}[1]{%
-  \parbox{\dimexpr\textwidth-2\fboxsep}{\thechapter\hspace{1em}#1}}
+\@ifundefined{chapter}{}{%
+  \newcommand{\chapterbox}[1]{%
+    \parbox{\dimexpr\textwidth-2\fboxsep}{\thechapter\hspace{1em}#1}}
+  \titleformat{\chapter}[hang]
+    {\fontsize{18pt}{21.6pt}\selectfont\bfseries}{}{0pt}{\chapterbox}
+}
 \newcommand{\sectionbox}[1]{%
   \colorbox{sectionbg}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesection\hspace{1em}\textsc{#1}}}}
 \newcommand{\subsectionbox}[1]{%
   \colorbox{subsectionbg}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesubsection\hspace{1em}#1}}}
 
-\titleformat{\chapter}[hang]
-  {\fontsize{18pt}{21.6pt}\selectfont\bfseries}{}{0pt}{\chapterbox}
 \titleformat{\section}
   {\fontsize{14pt}{16.8pt}\selectfont\bfseries}{}{0pt}{\sectionbox}
 \titleformat{\subsection}
@@ -123,19 +147,54 @@
 \newcommand{\keyword}[1]{\textbf{\textcolor{accent}{#1}}}
 \newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
 
-
+% ── Theorem-style Boxes ─────────────────────────────────────
 \tcbuselibrary{theorems}
 
-\newtcbtheorem[number within=chapter]{Statute}{Statute}{
-  colback=black!20,colframe=black!60,fonttitle=\bfseries,left=6pt}{statute}
-\newenvironment{statute}[1][]{\begin{Statute}{#1}{}}{\end{Statute}}
-
-\newtcbtheorem[number within=chapter]{Case}{Case}{
-  colback=purple!10,colframe=purple!60,fonttitle=\bfseries,left=6pt}{case}
-\newenvironment{case}[1][]{\begin{Case}{#1}{}}{\end{Case}}
-
-\newtcbtheorem[number within=chapter]{Rule}{Rule}{
-  colback=teal!15,colframe=teal!15,fonttitle=\bfseries,coltitle=black,left=6pt}{rul}
-\newenvironment{rul}[1][]{\begin{Rule}{#1}{}}{\end{Rule}}
+\ifdefstring{\lexnote@style}{ml}{%
+  % ── ML style: Theorem / Lemma / Definition / Remark ──────
+  \@ifundefined{chapter}{%
+    \newtcbtheorem[number within=section]{Theorem}{Theorem}{
+      colback=accent!8,colframe=accent!70,fonttitle=\bfseries,left=6pt}{thm}
+    \newtcbtheorem[number within=section]{Lemma}{Lemma}{
+      colback=blue!6,colframe=blue!50,fonttitle=\bfseries,left=6pt}{lem}
+    \newtcbtheorem[number within=section]{Definition}{Definition}{
+      colback=accent!5,colframe=accent!40,fonttitle=\bfseries,left=6pt}{def}
+    \newtcbtheorem[number within=section]{Remark}{Remark}{
+      colback=gray!8,colframe=gray!40,fonttitle=\bfseries,left=6pt}{rem}
+  }{%
+    \newtcbtheorem[number within=chapter]{Theorem}{Theorem}{
+      colback=accent!8,colframe=accent!70,fonttitle=\bfseries,left=6pt}{thm}
+    \newtcbtheorem[number within=chapter]{Lemma}{Lemma}{
+      colback=blue!6,colframe=blue!50,fonttitle=\bfseries,left=6pt}{lem}
+    \newtcbtheorem[number within=chapter]{Definition}{Definition}{
+      colback=accent!5,colframe=accent!40,fonttitle=\bfseries,left=6pt}{def}
+    \newtcbtheorem[number within=chapter]{Remark}{Remark}{
+      colback=gray!8,colframe=gray!40,fonttitle=\bfseries,left=6pt}{rem}
+  }
+  \newenvironment{thm}[1][]{\begin{Theorem}{#1}{}}{\end{Theorem}}
+  \newenvironment{lem}[1][]{\begin{Lemma}{#1}{}}{\end{Lemma}}
+  \newenvironment{defn}[1][]{\begin{Definition}{#1}{}}{\end{Definition}}
+  \newenvironment{rem}[1][]{\begin{Remark}{#1}{}}{\end{Remark}}
+}{%
+  % ── Law style: Statute / Case / Rule ─────────────────────
+  \@ifundefined{chapter}{%
+    \newtcbtheorem[number within=section]{Statute}{Statute}{
+      colback=black!20,colframe=black!60,fonttitle=\bfseries,left=6pt}{statute}
+    \newtcbtheorem[number within=section]{Case}{Case}{
+      colback=purple!10,colframe=purple!60,fonttitle=\bfseries,left=6pt}{case}
+    \newtcbtheorem[number within=section]{Rule}{Rule}{
+      colback=teal!15,colframe=teal!15,fonttitle=\bfseries,coltitle=black,left=6pt}{rul}
+  }{%
+    \newtcbtheorem[number within=chapter]{Statute}{Statute}{
+      colback=black!20,colframe=black!60,fonttitle=\bfseries,left=6pt}{statute}
+    \newtcbtheorem[number within=chapter]{Case}{Case}{
+      colback=purple!10,colframe=purple!60,fonttitle=\bfseries,left=6pt}{case}
+    \newtcbtheorem[number within=chapter]{Rule}{Rule}{
+      colback=teal!15,colframe=teal!15,fonttitle=\bfseries,coltitle=black,left=6pt}{rul}
+  }
+  \newenvironment{statute}[1][]{\begin{Statute}{#1}{}}{\end{Statute}}
+  \newenvironment{case}[1][]{\begin{Case}{#1}{}}{\end{Case}}
+  \newenvironment{rul}[1][]{\begin{Rule}{#1}{}}{\end{Rule}}
+}
 
 \endinput
