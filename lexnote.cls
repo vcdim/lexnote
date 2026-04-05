@@ -101,6 +101,21 @@
 \setlength{\cftsecnumwidth}{1.5em}
 \setlength{\cftsubsecnumwidth}{1.5em}
 \renewcommand{\cftsecfont}{\scshape}
+\renewcommand{\contentsname}{}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{0pt}
+\iflexnote@haschapter
+  % Suppress clearpage after TOC and before first chapter
+  \let\lexnote@oldtoc\tableofcontents
+  \renewcommand{\tableofcontents}{%
+    \begingroup
+    \let\clearpage\relax
+    \let\cleardoublepage\relax
+    \lexnote@oldtoc
+    \endgroup
+    \vskip 1em
+  }
+\fi
 
 % ── Section Numbering ───────────────────────────────────────
 \iflexnote@haschapter
@@ -116,6 +131,12 @@
 
 % ── Section Styling ─────────────────────────────────────────
 \RequirePackage{titlesec}
+
+% Make chapter not force a page break
+\iflexnote@haschapter
+  \titleclass{\chapter}{straight}
+  \titlespacing*{\chapter}{0pt}{2em}{1em}
+\fi
 
 \ifdefstring{\lexnote@style}{ml}{%
   % ML style: plain headings, no colored boxes

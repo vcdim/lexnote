@@ -36,6 +36,7 @@ Both styles include: `notebox`, `defbox`, `\keyword{}`, `\todo{}`.
 ### ML style
 
 <img src="screenshots/sample-ml-1.png" width="600">
+<img src="screenshots/sample-ml-2.png" width="600">
 
 ## Requirements
 
