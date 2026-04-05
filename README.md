@@ -1,6 +1,6 @@
 # lexnote
 
-Personal LaTeX note template for `ctexrep` / `ctexart`.
+Personal LaTeX note class for `ctexart` / `ctexrep` / `ctexbook`.
 
 ## Install
 
@@ -8,14 +8,16 @@ Personal LaTeX note template for `ctexrep` / `ctexart`.
 ./setup.sh
 ```
 
-This copies `lexnote.sty` to your `TEXMFHOME` so it's available globally.
+This copies `lexnote.cls` to your `TEXMFHOME` so it's available globally.
 
 ## Usage
 
 ```latex
-\documentclass{ctexart}  % or ctexrep
-\usepackage{lexnote}              % default: law style
-% \usepackage[style=ml]{lexnote}  % ML style
+\documentclass{lexnote}               % ctexart + law (default)
+\documentclass[style=ml]{lexnote}     % ctexart + ML
+\documentclass[rep]{lexnote}          % ctexrep + law
+\documentclass[book]{lexnote}         % ctexbook + law
+\documentclass[book,style=ml]{lexnote}% ctexbook + ML
 ```
 
 ## Styles
@@ -26,6 +28,14 @@ This copies `lexnote.sty` to your `TEXMFHOME` so it's available globally.
 | `ml` | Computer Modern + Songti SC | Purple-blue | `thm`, `lem`, `defn`, `rem` |
 
 Both styles include: `notebox`, `defbox`, `\keyword{}`, `\todo{}`.
+
+### Law style
+
+<img src="screenshots/sample-law-1.png" width="600">
+
+### ML style
+
+<img src="screenshots/sample-ml-1.png" width="600">
 
 ## Requirements
 
