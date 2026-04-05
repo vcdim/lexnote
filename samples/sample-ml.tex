@@ -25,9 +25,10 @@
   （前向过程：逐步向数据添加高斯噪声）
 \end{defn}
 
-Using the reparameterization trick with $\alpha_t = 1 - \beta_t$ and
-$\bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$, we can sample $\mathbf{x}_t$
-directly from $\mathbf{x}_0$:
+利用\textbf{重参数化技巧}，令 $\alpha_t = 1 - \beta_t$，
+$\bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$，
+我们可以\textit{直接从原始数据}$\mathbf{x}_0$采样任意时刻的$\mathbf{x}_t$，
+而无需逐步迭代：
 
 \begin{thm}[Closed-Form Sampling]
   \[
