@@ -46,17 +46,10 @@
 \RequirePackage{microtype}
 \RequirePackage{fontspec}
 \ifdefstring{\lexnote@style}{ml}{%
-  \IfFontExistsTF{Noto Sans CJK SC Bold}{%
-    \setCJKmainfont{Songti SC}[
-      BoldFont=Noto Sans CJK SC Bold,
-      ItalicFont=Kaiti SC,
-    ]
-  }{%
-    \setCJKmainfont{Songti SC}[
-      BoldFont=Heiti SC,
-      ItalicFont=Kaiti SC,
-    ]
-  }
+  \setCJKmainfont{Songti SC}[
+    BoldFont=Heiti SC Medium,
+    ItalicFont=Kaiti SC,
+  ]
 }{%
   \setmainfont{Calibri}
   \setCJKmainfont{Kaiti SC}

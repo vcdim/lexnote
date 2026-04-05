@@ -25,7 +25,7 @@ This copies `lexnote.cls` to your `TEXMFHOME` so it's available globally.
 | Style | Fonts | Colors | Environments |
 |-------|-------|--------|-------------|
 | `law` (default) | Calibri + Kaiti SC | Teal | `statute`, `case`, `rul` |
-| `ml` | Computer Modern + Songti SC (bold: Noto Sans CJK, italic: Kaiti) | Purple-blue | `thm`, `lem`, `defn`, `rem` |
+| `ml` | Computer Modern + Songti SC (bold: Heiti SC, italic: Kaiti SC) | Purple-blue | `thm`, `lem`, `defn`, `rem` |
 
 Both styles include: `notebox`, `defbox`, `\keyword{}`, `\todo{}`.
 
@@ -42,8 +42,3 @@ Both styles include: `notebox`, `defbox`, `\keyword{}`, `\todo{}`.
 
 - TeX Live / MacTeX with XeLaTeX
 - CTeX bundle
-- **ML style** requires Noto Sans CJK SC for CJK bold:
-
-  ```bash
-  brew install --cask font-noto-sans-cjk-sc
-  ```
