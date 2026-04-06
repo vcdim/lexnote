@@ -1,4 +1,6 @@
 \documentclass[rep, style=ml]{lexnote}
+\usepackage[backend=biber, style=numeric]{biblatex}
+\addbibresource{../gqbib/gq-biblatex.bib}
 
 \title{Sample: Generative Models}
 \author{Jane Doe}
@@ -56,7 +58,7 @@ $\bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$，
 
 \subsection{Training Objective}
 
-The \keyword{simplified loss} used in DDPM reduces to a denoising objective:
+The \keyword{simplified loss} used in DDPM \cite{hoDenoisingDiffusionProbabilistic2020} reduces to a denoising objective:
 
 \begin{notebox}[Key Insight]
   Instead of predicting $\mathbf{x}_0$ directly, the model learns to predict
@@ -75,7 +77,8 @@ The \keyword{simplified loss} used in DDPM reduces to a denoising objective:
   The noise prediction network $\boldsymbol{\epsilon}_\theta$ is equivalent
   to learning the score function
   $\nabla_{\mathbf{x}} \log q(\mathbf{x}_t)$, up to a scaling factor.
-  This connects DDPM to score-based generative models.
+  This connects DDPM to score-based generative models
+  \cite{songScoreBasedGenerativeModeling2020}.
   （噪声预测等价于学习得分函数，与 score-based 模型统一）
 \end{rem}
 
@@ -121,5 +124,7 @@ The \keyword{simplified loss} used in DDPM reduces to a denoising objective:
 \end{rem}
 
 \todo{Add chapter on VAEs}
+
+\printbibliography
 
 \end{document}

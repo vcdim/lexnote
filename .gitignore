@@ -5,3 +5,8 @@ samples/*.toc
 samples/*.pdf
 samples/*.synctex.gz
 samples/auto/
+samples/*.bbl
+samples/*.bcf
+samples/*.blg
+samples/*.run.xml
+.DS_Store
