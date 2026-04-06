@@ -180,6 +180,7 @@
   title={#1},
   boxrule=0.5pt,
   arc=2pt,
+  breakable,
 }
 
 % Definition box
