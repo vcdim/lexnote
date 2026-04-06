@@ -42,3 +42,7 @@ Both styles include: `notebox`, `defbox`, `\keyword{}`, `\todo{}`.
 
 - TeX Live / MacTeX with XeLaTeX
 - CTeX bundle
+- Calibri font (law style) — if not already installed:
+  ```bash
+  curl -L https://github.com/jondot/dotfiles/blob/master/.fonts/calibri.ttf?raw=true -o ~/Library/Fonts/calibri.ttf
+  ```
