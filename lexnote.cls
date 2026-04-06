@@ -73,6 +73,10 @@
 
 % ── Math ────────────────────────────────────────────────────
 \RequirePackage{amsmath,amssymb,mathtools,amsthm}
+\RequirePackage{bm}
+
+% ── Annotations ─────────────────────────────────────────────
+\RequirePackage{todonotes}
 
 % ── Headers & Footers ──────────────────────────────────────
 \RequirePackage{fancyhdr}
@@ -173,7 +177,7 @@
 \RequirePackage[most]{tcolorbox}
 
 % Note box
-\newtcolorbox{notebox}[1][Note]{%
+\newtcolorbox{notebox}[1][]{%
   colback=lightbg,
   colframe=accent,
   fonttitle=\bfseries,
@@ -208,7 +212,7 @@
 
 % ── Shorthand Commands ──────────────────────────────────────
 \newcommand{\keyword}[1]{\textbf{\textcolor{accent}{#1}}}
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+% \todo is provided by todonotes package
 
 % ── Theorem-style Boxes ─────────────────────────────────────
 \tcbuselibrary{theorems}
