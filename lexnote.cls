@@ -75,6 +75,9 @@
 \RequirePackage{amsmath,amssymb,mathtools,amsthm}
 \RequirePackage{bm}
 
+% ── Code Listings ───────────────────────────────────────────
+\RequirePackage{minted}
+
 % ── Annotations ─────────────────────────────────────────────
 \RequirePackage{todonotes}
 
@@ -200,6 +203,7 @@
 
 % ── Custom Title Block ──────────────────────────────────────
 \renewcommand{\maketitle}{%
+  \thispagestyle{empty}
   \begin{center}
     {\LARGE\bfseries\color{accent}\@title\par}
     \vskip 0.5em
